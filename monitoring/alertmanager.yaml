@@ -1,0 +1,22 @@
+global:
+  # Global variables
+route:
+  group_by: [Alertname]
+  receiver: email_and_slack
+receivers:
+- name: email_and_slack
+  email_configs:
+  - to: alerts@fsalab.local
+    from: pxdemo@fsalab.local
+    smarthost: mail.fsalab.local:25
+    auth_username: user1
+    auth_identity: user1@fsalab.local
+    auth_password: password123
+    text: |-
+      {{ range .Alerts }}
+        *Alert:* {{ .Annotations.summary }} - `{{ .Labels.severity }}`
+        *Description:* {{ .Annotations.description }}
+        *Details:*
+        {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+        {{ end }}
+      {{ end }}
